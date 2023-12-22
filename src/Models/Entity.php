@@ -3,13 +3,15 @@
 namespace KusikusicmsModels\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use KusikusicmsModels\Models\Traits\UsesShortId;
 use KusikusicmsModels\Casts\Json;
 
+
 class Entity extends Model
 {
-    use UsesShortId, HasFactory, SoftDeletes;
+    use UsesShortId, HasFactory, SoftDeletes, BelongsToOne;
 
     /**
      * The table associated with the model.
