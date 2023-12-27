@@ -1,6 +1,6 @@
 <?php
 
-namespace KusikusicmsModels\Models\Traits;
+namespace KusikusiCMS\Models\Traits;
 
 use Illuminate\Support\Facades\Config;
 use PUGX\Shortid\Shortid;

@@ -1,9 +1,8 @@
 <?php
 
-namespace KusikusicmsModels\Models;
+namespace KusikusiCMS\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
-use Illuminate\Database\Eloquent\Model;
 
 class EntityRelation extends Pivot
 {
@@ -57,7 +56,7 @@ class EntityRelation extends Pivot
     protected $guarded = ['relation_id'];
 
     /**
-     * To avoid "ambiguos" errors Get the primary key for the model.
+     * To avoid "ambiguous" errors Get the primary key for the model.
      *
      * @return string
      */

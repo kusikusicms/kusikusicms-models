@@ -1,17 +1,17 @@
 <?php
 
-namespace KusikusicmsModels\Models;
+namespace KusikusiCMS\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use KusikusicmsModels\Models\Traits\UsesShortId;
+use KusikusiCMS\Models\Traits\UsesShortId;
 use KusikusicmsModels\Casts\Json;
 
 
 class Entity extends Model
 {
-    use UsesShortId, HasFactory, SoftDeletes, BelongsToOne;
+    use UsesShortId, HasFactory, SoftDeletes;
 
     /**
      * The table associated with the model.

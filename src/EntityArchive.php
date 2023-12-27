@@ -1,6 +1,6 @@
 <?php
 
-namespace KusikusicmsModels\Models;
+namespace KusikusiCMS\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

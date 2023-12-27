@@ -16,19 +16,21 @@ class CreateEntitiesContentsTable extends Migration
     {
         Schema::create('entities_contents', function (Blueprint $table) {
             $table->id('content_id');
-            $table->string('entity_id', 32)->index();
+            $table->string('entity_id', 26)->index();
             $table->char('lang', 5)->index();
             $table->string('field', 32)->index();
             $table->text('text')->nullable();
             $table->timestampsTz();
             $table->unique(['entity_id', 'lang', 'field']);
             $table->foreign('entity_id')
-                ->references('id')->on('entities')
-                ->onDelete('cascade')->onUpdate('cascade');
+                ->references('id')
+                ->on('entities')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
         switch(env('DB_CONNECTION')) {
             case 'mysql':
-                DB::statement('create fulltext index entities_contents_value_fulltext on entities_contents(text);');
+                DB::statement('CREATE FULLTEXT INDEX entities_contents_value_fulltext ON entities_contents(text);');
                 break;
         }
     }
@@ -40,13 +42,6 @@ class CreateEntitiesContentsTable extends Migration
      */
     public function down()
     {
-        Schema::table('entities_contents', function (Blueprint $table) {
-            $sm = Schema::getConnection()->getDoctrineSchemaManager();
-            $doctrineTable = $sm->listTableDetails('entities_contents');
-            if ($doctrineTable->hasIndex('entities_contents_value_fulltext')) {
-                $table->dropIndex('entities_contents_value_fulltext');
-            }
-        });
         Schema::dropIfExists('entities_contents');
     }
 }

@@ -14,12 +14,12 @@ class CreateEntitiesTable extends Migration
     public function up()
     {
         Schema::create('entities', function (Blueprint $table) {
-            $table->string('id', 32)->primary();
+            $table->string('id', 26)->primary();
             $table->string('model', 32)->index();
             $table->json('properties')->nullable();
             $table->string('view', 32)->nullable();
             $table->json('langs')->nullable();
-            $table->string('parent_entity_id', 32)->index('parent')->nullable();
+            $table->string('parent_entity_id', 26)->index('parent')->nullable();
             $table->string('visibility', 32)->nullable('public')->index();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -31,14 +31,23 @@ class CreateEntitiesTable extends Migration
             $table->integer('version_full')->unsigned()->default(1);
             $table->timestampsTz();
             $table->softDeletesTz();
-            // Uncomment if you want a foreign key to users table for created_by and / or updated_by
-            // $table->foreign('created_by')->references('id')->on('users')->onDelete('set null')->onUpdate('cascade');
-            // $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null')->onUpdate('cascade');
+            $table->foreign('created_by')
+                ->references('id')
+                ->on('users')
+                ->onDelete('set null')
+                ->onUpdate('cascade');
+            $table->foreign('updated_by')
+                ->references('id')
+                ->on('users')
+                ->onDelete('set null')
+                ->onUpdate('cascade');
         });
         Schema::table('entities', function (Blueprint $table) {
             $table->foreign('parent_entity_id')
-                ->references('id')->on('entities')
-                ->onDelete('set null')->onUpdate('cascade');
+                ->references('id')
+                ->on('entities')
+                ->onDelete('set null')
+                ->onUpdate('cascade');
         });
     }
 
