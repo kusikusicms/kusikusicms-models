@@ -6,10 +6,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use KusikusiCMS\Models\Traits\UsesShortId;
-use KusikusicmsModels\Casts\Json;
+use KusikusiCMS\Models\Events\{
+    EntityCreating,
+    EntityCreated,
+    EntityRetrieved,
+    EntityUpdating,
+    EntityUpdated,
+    EntitySaving,
+    EntitySaved,
+    EntityDeleting,
+    EntityDeleted,
+    EntityTrashed,
+    EntityForceDeleting,
+    EntityForceDeleted,
+    EntityRestoring,
+    EntityRestored,
+    EntityReplicating
+};
 
 
-class Entity extends Model
+class Entity extends Model//
 {
     use UsesShortId, HasFactory, SoftDeletes;
 
@@ -38,12 +54,6 @@ class Entity extends Model
         'unpublished_at'
     ];
 
-    protected $contentFields = [];
-
-    protected $propertiesFields = [];
-
-    protected $ancestorsRelations = true;
-
     /**
      * The attributes that should be cast.
      *
@@ -54,5 +64,28 @@ class Entity extends Model
         'published_at' => 'datetime',
         'unpublished_at' => 'datetime',
         'langs' => 'array'
+    ];
+
+    /**
+     * The event map for the model. Some events are not used here, but they are defined so other packages can use them
+     *
+     * @var array
+     */
+    protected $dispatchesEvents = [
+        'retrieved' => EntityRetrieved::class,
+        'creating' => EntityCreating::class,
+        'created' => EntityCreated::class,
+        'updating' => EntityUpdating::class,
+        'updated' => EntityUpdated::class,
+        'saving' => EntitySaving::class,
+        'saved' => EntitySaved::class,
+        'deleting' => EntityDeleting::class,
+        'deleted' => EntityDeleted::class,
+        'trashed' => EntityTrashed::class,
+        'forceDeleting' => EntityForceDeleting::class,
+        'forceDeleted' => EntityForceDeleted::class,
+        'restoring' => EntityRestoring::class,
+        'restored' => EntityRestored::class,
+        'replicating' => EntityReplicating::class,
     ];
 }

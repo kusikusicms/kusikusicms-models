@@ -7,9 +7,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 class EntityRelation extends Pivot
 {
     const RELATION_ANCESTOR = 'ancestor';
-    const RELATION_MEDIA = 'medium';
     const RELATION_UNDEFINED = 'relation';
-    const RELATION_MENU = 'menu';
 
     /**
      * The table associated with the model.
