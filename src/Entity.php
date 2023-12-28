@@ -29,6 +29,7 @@ class Entity extends Model
         'id',
         'model',
         'view',
+        'langs',
         'properties',
         'visibility',
         'parent_entity_id',
@@ -49,7 +50,7 @@ class Entity extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'properties' => Json::class,
+        'properties' => 'array',
         'published_at' => 'datetime',
         'unpublished_at' => 'datetime',
         'langs' => 'array'

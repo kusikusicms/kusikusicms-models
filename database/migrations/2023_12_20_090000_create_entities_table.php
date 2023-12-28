@@ -15,22 +15,22 @@ class CreateEntitiesTable extends Migration
     {
         Schema::create('entities', function (Blueprint $table) {
             $table->string('id', 26)->primary();
-            $table->string('model', 32)->index();
+            $table->string('model', 32)->index()->default('Entity');
             $table->json('properties')->nullable();
             $table->string('view', 32)->nullable();
             $table->json('langs')->nullable();
             $table->string('parent_entity_id', 26)->index('parent')->nullable();
-            $table->string('visibility', 32)->nullable('public')->index();
+            $table->enum('visibility', ['public', 'private', 'draft'])->nullable()->index();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
-            $table->dateTime('published_at')->default('2000-01-01 00:00:00');
-            $table->dateTime('unpublished_at')->nullable();
+            $table->timestamp('published_at');
+            $table->timestamp('unpublished_at')->nullable();
             $table->integer('version')->unsigned()->default(1);
             $table->integer('version_tree')->unsigned()->default(1);
             $table->integer('version_relations')->unsigned()->default(1);
             $table->integer('version_full')->unsigned()->default(1);
-            $table->timestampsTz();
-            $table->softDeletesTz();
+            $table->timestamps();
+            $table->softDeletes();
             $table->foreign('created_by')
                 ->references('id')
                 ->on('users')

@@ -20,7 +20,7 @@ class CreateEntitiesContentsTable extends Migration
             $table->char('lang', 5)->index();
             $table->string('field', 32)->index();
             $table->text('text')->nullable();
-            $table->timestampsTz();
+            $table->timestamps();
             $table->unique(['entity_id', 'lang', 'field']);
             $table->foreign('entity_id')
                 ->references('id')

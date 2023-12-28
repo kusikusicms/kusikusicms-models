@@ -21,7 +21,7 @@ class CreateEntitiesRelationsTable extends Migration
             $table->integer('position')->default(0);
             $table->integer('depth')->unsigned()->default(0)->index('depth');
             $table->json('tags')->nullable();
-            $table->timestampsTz();
+            $table->timestamps();
             $table->foreign('caller_entity_id')
                 ->references('id')
                 ->on('entities')
