@@ -20,7 +20,7 @@ class CreateEntitiesTable extends Migration
             $table->string('view', 32)->nullable();
             $table->json('langs')->nullable();
             $table->string('parent_entity_id', 26)->index('parent')->nullable();
-            $table->enum('visibility', ['public', 'private', 'draft'])->nullable()->index();
+            $table->string('status')->nullable()->index();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamp('published_at');

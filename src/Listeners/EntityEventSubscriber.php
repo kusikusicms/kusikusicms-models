@@ -21,7 +21,6 @@ class EntityEventSubscriber
         // Setting default values
         if (!isset($event->entity->model))         { $event->entity->model = 'Entity'; }
         if (!isset($event->entity->published_at))  { $event->entity->published_at = Carbon::now(); }
-        if (!isset($event->entity->visibility))    { $event->entity->visibility = 'public'; }
         if (!isset($event->entity->view))          { $event->entity->view = Str::snake($event->entity['model']); }
         if (!isset($event->entity->properties))    { $event->entity->properties = new \ArrayObject(); }
     }

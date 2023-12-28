@@ -47,7 +47,7 @@ class Entity extends Model//
         'view',
         'langs',
         'properties',
-        'visibility',
+        'status',
         'parent_entity_id',
         'created_at',
         'published_at',
