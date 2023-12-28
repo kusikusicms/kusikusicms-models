@@ -149,6 +149,19 @@ class Entity extends Model//
      **********/
 
     /**
+     * Scope a query to only include entities of a given modelId.
+     *
+     * @param  Builder $query
+     * @param  string $modelId
+     * @return Builder
+     */
+    public function scopeOfModel(Builder $query, string $model)
+    {
+        // TODO: Accept array of model ids
+        return $query->where('model', $model);
+    }
+
+    /**
      * Scope a query to only include children of a given parent id.
      *
      * @param  Builder  $query
