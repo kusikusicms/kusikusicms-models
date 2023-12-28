@@ -2,6 +2,7 @@
 
 namespace KusikusiCMS\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -126,7 +127,7 @@ class Entity extends Model//
                 "depth" => $currentDepth
             ]);
             $currentAncestor = Entity::find($currentAncestor->parent_entity_id);
-            $currentDepth ++;
+            $currentDepth++;
         }
         // Descendants should be updated as well
         $children = Entity::where("parent_entity_id", $entity->id)->get();
@@ -140,5 +141,41 @@ class Entity extends Model//
     public function refreshAncestorsRelations(): void
     {
         self::refreshAncestorsRelationsOfEntity($this);
+    }
+
+
+    /**********
+     * SCOPES *
+     **********/
+
+    /**
+     * Scope a query to only include children of a given parent id.
+     *
+     * @param  Builder  $query
+     * @param  string  $entity_id  The id of the parent entity
+     * @param  string|null  $tag  Filter by one tag
+     *
+     * @return Builder
+     * @throws Exception
+     */
+    public function scopeChildrenOf(
+        Builder $query,
+        string $entity_id,
+        string|null $tag = null
+    ): Builder {
+        return $query->join('entities_relations as child',
+            function ($join) use ($entity_id, $tag) {
+                $join->on('child.caller_entity_id', '=', 'entities.id')
+                    ->where('child.called_entity_id', '=', $entity_id)
+                    ->where('child.depth', '=', 1)
+                    ->where('child.kind', '=',
+                        EntityRelation::RELATION_ANCESTOR)
+                    ->when($tag, function ($q) use ($tag) {
+                        return $q->whereJsonContains('child.tags', $tag);
+                    });;
+            })
+            ->addSelect('id')
+            ->addSelect('child.position as child.position')
+            ->addSelect('child.tags as child.tags');
     }
 }
