@@ -152,7 +152,7 @@ class Entity extends Model//
      * Scope a query to only include entities of a given modelId.
      *
      * @param  Builder $query
-     * @param  string $modelId
+     * @param  string $model
      * @return Builder
      */
     public function scopeOfModel(Builder $query, string $model)
