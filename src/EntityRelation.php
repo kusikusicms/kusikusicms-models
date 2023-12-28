@@ -62,4 +62,18 @@ class EntityRelation extends Pivot
     {
         return 'relation_id';
     }
+
+    /**
+     * The relation to the Entity is calling
+     */
+    public function caller_entity() {
+        return $this->belongsTo('KusikusiCMS\Models\Entity', 'caller_entity_id', 'relation_id');
+    }
+
+    /**
+     * The relation to the Entity is being called
+     */
+    public function called_entity() {
+        return $this->belongsTo('KusikusiCMS\Models\Entity', 'called_entity_id', 'relation_id');
+    }
 }
