@@ -6,11 +6,14 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Str;
 use KusikusiCMS\Models\Entity;
 use KusikusiCMS\Models\Events\EntityCreating;
+use KusikusiCMS\Models\Events\EntitySaved;
 
 class EntityEventSubscriber
 {
     /**
-     * Handle user login events.
+     * Handle EntityCreating event.
+     *
+     * @param  EntityCreating  $event
      */
     public function entityCreating(EntityCreating $event): void
     {
@@ -26,12 +29,28 @@ class EntityEventSubscriber
     }
 
     /**
+     * Handle EntitySaved event
+     *
+     * @param  EntitySaved  $event
+     */
+    public function entitySaved(EntitySaved $event): void
+    {
+        if ($event->entity->isDirty('parent_entity_id')) {
+            $event->entity->refreshAncestorsRelations();
+        }
+    }
+
+    /**
      * Register the listeners for the subscriber.
+     *
+     * @param  Dispatcher  $events
+     * @return array
      */
     public function subscribe(Dispatcher $events): array
     {
         return [
-            EntityCreating::class => 'entityCreating'
+            EntityCreating::class => 'entityCreating',
+            EntitySaved::class => 'entitySaved'
         ];
     }
 }

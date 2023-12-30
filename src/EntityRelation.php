@@ -21,35 +21,38 @@ class EntityRelation extends Pivot
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'caller_entity_id',
-        'called_entity_id',
-        'kind',
-        'position',
-        'depth',
-        'tags'
-    ];
+    protected $fillable
+        = [
+            'caller_entity_id',
+            'called_entity_id',
+            'kind',
+            'position',
+            'depth',
+            'tags'
+        ];
 
     /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
      */
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-        'caller_entity_id',
-        'called_entity_id'
-    ];
+    protected $hidden
+        = [
+            'created_at',
+            'updated_at',
+            'caller_entity_id',
+            'called_entity_id'
+        ];
 
     /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
      */
-    protected $casts = [
-        'tags' => 'array'
-    ];
+    protected $casts
+        = [
+            'tags' => 'array'
+        ];
 
     protected $guarded = ['relation_id'];
 
@@ -61,5 +64,23 @@ class EntityRelation extends Pivot
     public function getKeyName()
     {
         return 'relation_id';
+    }
+
+    /**
+     * The relation to the Entity is calling
+     */
+    public function caller_entity()
+    {
+        return $this->belongsTo('KusikusiCMS\Models\Entity', 'caller_entity_id',
+            'relation_id');
+    }
+
+    /**
+     * The relation to the Entity is being called
+     */
+    public function called_entity()
+    {
+        return $this->belongsTo('KusikusiCMS\Models\Entity', 'called_entity_id',
+            'relation_id');
     }
 }
