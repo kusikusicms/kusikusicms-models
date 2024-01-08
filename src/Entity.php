@@ -26,7 +26,7 @@ use KusikusiCMS\Models\Events\{
 };
 
 
-class Entity extends Model//
+class Entity extends Model
 {
     use UsesShortId, HasFactory, SoftDeletes;
 

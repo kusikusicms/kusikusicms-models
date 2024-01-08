@@ -1,7 +1,6 @@
 {
     "name": "kusikusicms/models",
     "description": "Kusikusi CMS Models",
-    "version": "10.0.0-alpha.1",
     "type": "package",
     "require": {
         "illuminate/support": "^10.38",
