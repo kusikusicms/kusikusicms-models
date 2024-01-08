@@ -47,9 +47,9 @@ final class EntityTest extends TestCase
         $entity->save();
         $this->assertNotNull($entity->id);
         $this->assertNotNull($entity->published_at);
-        $this->assertEquals($entity->model, 'Entity');
-        $this->assertEquals($entity->view, 'entity');
-        $this->assertEquals($entity->properties, []);
+        $this->assertEquals('Entity', $entity->model);
+        $this->assertEquals('entity', $entity->view);
+        $this->assertEquals([], $entity->properties);
     }
     /**
      * A custom entity id can be set.
@@ -65,6 +65,7 @@ final class EntityTest extends TestCase
         $this->assertDatabaseHas('entities', [
             'id' => $id
         ]);
+        $this->assertModelExists($entity);
     }
     /**
      * A custom model id can be set.
@@ -75,10 +76,29 @@ final class EntityTest extends TestCase
         $entity = new Entity([
             'model' => $model
         ]);
-        $this->assertEquals($entity->model, $model);
+        $this->assertEquals($model, $entity->model);
         $entity->save();
         $this->assertDatabaseHas('entities', [
             'model' => $model
         ]);
+        $this->assertModelExists($entity);
+    }
+    /**
+     * Testing the scope ofModel.
+     */
+    public function testScopeOfModel(): void
+    {
+        $counts = [3, 5, 7];
+        $total = 0;
+        for ($m = 0; $m < count($counts); $m++) {
+            $modelName = 'model' . $m;
+            Entity::factory($counts[$m])->create(['model' => $modelName]);
+            $total = $total + $counts[$m];
+            $scoped = Entity::query()
+                ->ofModel($modelName)
+                ->get();
+            $this->assertEquals($counts[$m], $scoped->count());
+        }
+        $this->assertDatabaseCount('entities', $total);
     }
 }
