@@ -190,4 +190,26 @@ class Entity extends Model
             ->addSelect('child.position as child.position')
             ->addSelect('child.tags as child.tags');
     }
+
+    /**
+     * Scope a query to only include the parent of the given id.
+     *
+     * @param  number  $entity_id  The id of the parent entity
+     *
+     * @throws \Exception
+     */
+    public function scopeParentOf(Builder $query, $entity_id): Builder
+    {
+        return $query->join('entities_relations as parent', function ($join) use ($entity_id) {
+            $join->on('parent.called_entity_id', '=', 'entities.id')
+                ->where('parent.caller_entity_id', '=', $entity_id)
+                ->where('parent.depth', '=', 1)
+                ->where('parent.kind', '=', EntityRelation::RELATION_ANCESTOR);
+        })
+            ->addSelect('id')
+            ->addSelect('parent.relation_id as parent.relation_id')
+            ->addSelect('parent.position as parent.position')
+            ->addSelect('parent.depth as parent.depth')
+            ->addSelect('parent.tags as parent.tags');
+    }
 }

@@ -112,7 +112,6 @@ final class EntityTest extends TestCase
     public function testScopeChildrenOf(): void
     {
         $parentId = 'parentId';
-        $childId = 'childId';
         $childCount = 2;
         Entity::factory()->create(['id' => $parentId]);
         Entity::factory(5)->create();
@@ -154,5 +153,25 @@ final class EntityTest extends TestCase
             ->ofModel($model2)
             ->get();
         $this->assertEquals($model2Count, $scoped->count());
+    }
+
+    /**
+     * Testing scope ParentOf
+     */
+    public function testScopeParentOf(): void
+    {
+        $parentId = 'parentId';
+        $childId = 'childId';
+        Entity::factory()->create(['id' => $parentId]);
+        Entity::factory(5)->create();
+        Entity::factory()->create([
+            'id' => $childId,
+            'parent_entity_id' => $parentId,
+        ]);
+        $scoped = Entity::query()
+            ->select('model')
+            ->parentOf($childId);
+        $this->assertEquals(1, $scoped->get()->count());
+        $this->assertEquals($parentId, $scoped->first()->id);
     }
 }
