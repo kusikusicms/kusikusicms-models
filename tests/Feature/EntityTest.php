@@ -117,7 +117,7 @@ final class EntityTest extends TestCase
         Entity::factory()->create(['id' => $parentId]);
         Entity::factory(5)->create();
         Entity::factory($childCount)->create([
-            'parent_entity_id' => $parentId
+            'parent_entity_id' => $parentId,
         ]);
         $scoped = Entity::query()
             ->childrenOf($parentId)
@@ -138,11 +138,11 @@ final class EntityTest extends TestCase
         Entity::factory()->create(['id' => $parentId]);
         Entity::factory($model1Count)->create([
             'parent_entity_id' => $parentId,
-            'model' => $model1
+            'model' => $model1,
         ]);
         Entity::factory($model2Count)->create([
             'parent_entity_id' => $parentId,
-            'model' => $model2
+            'model' => $model2,
         ]);
         $scoped = Entity::query()
             ->childrenOf($parentId)

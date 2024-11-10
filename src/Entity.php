@@ -157,9 +157,9 @@ class Entity extends Model
     /**
      * Scope a query to only include entities of a given modelId.
      *
-     * @return Builder
+     * @param  string  $model  The id of the model
      */
-    public function scopeOfModel(Builder $query, string $model)
+    public function scopeOfModel(Builder $query, string $model): Builder
     {
         // TODO: Accept array of model ids
         return $query->where('model', $model);
@@ -173,11 +173,8 @@ class Entity extends Model
      *
      * @throws Exception
      */
-    public function scopeChildrenOf(
-        Builder $query,
-        string $entity_id,
-        ?string $tag = null
-    ): Builder {
+    public function scopeChildrenOf(Builder $query, string $entity_id, ?string $tag = null): Builder
+    {
         return $query->join('entities_relations as child',
             function ($join) use ($entity_id, $tag) {
                 $join->on('child.caller_entity_id', '=', 'entities.id')
