@@ -7,7 +7,7 @@
         "ankurk91/laravel-eloquent-relationships": "^2.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^10.5",
+        "phpunit/phpunit": "^11.0",
         "orchestra/testbench": "^9.5.2",
         "laravel/pint": "^1.18"
     },
