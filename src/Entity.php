@@ -171,7 +171,6 @@ class Entity extends Model
      * @param  string  $entity_id  The id of the parent entity
      * @param  string|null  $tag  Filter by one tag
      *
-     * @throws Exception
      */
     public function scopeChildrenOf(Builder $query, string $entity_id, ?string $tag = null): Builder
     {
@@ -196,7 +195,6 @@ class Entity extends Model
      *
      * @param  number  $entity_id  The id of the parent entity
      *
-     * @throws \Exception
      */
     public function scopeParentOf(Builder $query, $entity_id): Builder
     {
