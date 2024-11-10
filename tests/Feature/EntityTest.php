@@ -111,24 +111,48 @@ final class EntityTest extends TestCase
      */
     public function testScopeChildrenOf(): void
     {
-        $parent = new Entity([
-            'id' => 'parentId',
-        ]);
-        $parent->save();
-        $child = new Entity([
-            'id' => 'childId',
-            'parent_entity_id' => 'parentId'
-        ]);
-        $child->save();
-        $this->assertDatabaseHas('entities', [
-            'id' => 'parentId',
-        ]);
-        $this->assertDatabaseHas('entities', [
-            'id' => 'childId',
+        $parentId = 'parentId';
+        $childId = 'childId';
+        $childCount = 2;
+        Entity::factory()->create(['id' => $parentId]);
+        Entity::factory(5)->create();
+        Entity::factory($childCount)->create([
+            'parent_entity_id' => $parentId
         ]);
         $scoped = Entity::query()
-            ->childrenOf('parentId')
+            ->childrenOf($parentId)
             ->get();
-        $this->assertEquals(1, $scoped->count());
+        $this->assertEquals($childCount, $scoped->count());
+    }
+
+    /**
+     * Testing combination of ChildrenOf and ofModel scopes
+     */
+    public function testScopeChildrenOfAndOfModel(): void
+    {
+        $parentId = 'parentId';
+        $model1 = 'model1';
+        $model2 = 'model2';
+        $model1Count = 3;
+        $model2Count = 5;
+        Entity::factory()->create(['id' => $parentId]);
+        Entity::factory($model1Count)->create([
+            'parent_entity_id' => $parentId,
+            'model' => $model1
+        ]);
+        Entity::factory($model2Count)->create([
+            'parent_entity_id' => $parentId,
+            'model' => $model2
+        ]);
+        $scoped = Entity::query()
+            ->childrenOf($parentId)
+            ->ofModel($model1)
+            ->get();
+        $this->assertEquals($model1Count, $scoped->count());
+        $scoped = Entity::query()
+            ->childrenOf($parentId)
+            ->ofModel($model2)
+            ->get();
+        $this->assertEquals($model2Count, $scoped->count());
     }
 }
