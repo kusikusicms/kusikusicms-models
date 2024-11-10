@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\ServiceProvider;
 use KusikusiCMS\Models\Entity;
+use KusikusiCMS\Models\EntityRelation;
 use Orchestra\Testbench\TestCase;
 
 final class EntityScopesTest extends TestCase
@@ -61,6 +62,44 @@ final class EntityScopesTest extends TestCase
             ->childrenOf($parentId)
             ->get();
         $this->assertEquals($childCount, $scoped->count());
+    }
+
+    /**
+     * Testing scope ChildrenOf and filter by tag
+     */
+    public function testScopeChildrenOfFilterByTags(): void
+    {
+        $parentId = 'parentId';
+        $childCount = 20;
+        $tagEvery = 5;
+        $tag = 'any-tag';
+        Entity::factory()->create(['id' => $parentId]);
+        Entity::factory(10)->create(); // Creating random entities to be sure they are not included
+        for ($c = 0; $c < $childCount; $c++) {
+            $entity = Entity::create([
+                'parent_entity_id' => $parentId,
+            ]);
+            // Tagging 1 of every 5 parent relations
+            if ($c % $tagEvery == 0) {
+                $relation = EntityRelation::query()
+                    ->filter([
+                        'caller_entity_id' => $entity->id,
+                        'depth' => 1,
+                        'kind' => EntityRelation::RELATION_ANCESTOR,
+                    ])
+                    ->first();
+                $relation->tags = [$tag];
+                $relation->save();
+            }
+        }
+        $scoped = Entity::query()
+            ->childrenOf($parentId)
+            ->get();
+        $this->assertEquals($childCount, $scoped->count());
+        $scoped = Entity::query()
+            ->childrenOf($parentId, $tag)
+            ->get();
+        $this->assertEquals(ceil($childCount / $tagEvery), $scoped->count());
     }
 
     /**
