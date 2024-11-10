@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use KusikusiCMS\Models\Events\EntityCreated;
 use KusikusiCMS\Models\Events\EntityCreating;
@@ -230,5 +231,18 @@ class Entity extends Model
             ->addSelect('ancestor.position as ancestor.position')
             ->addSelect('ancestor.depth as ancestor.depth')
             ->addSelect('ancestor.tags as ancestor.tags');
+    }
+
+    /***
+     * RELATIONS
+     */
+
+    /**
+     * Get the records in the entities_relations table this entity is using
+     */
+    public function relations(): HasMany
+    {
+        return $this
+            ->hasMany(EntityRelation::class, 'caller_entity_id', 'id');
     }
 }
