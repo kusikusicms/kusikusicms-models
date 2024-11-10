@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class EntityContent extends Model
 {
-
     /**
      * The table associated with the model.
      *
@@ -23,7 +22,7 @@ class EntityContent extends Model
         'entity_id',
         'lang',
         'field',
-        'text'
+        'text',
     ];
 
     /**
@@ -33,7 +32,7 @@ class EntityContent extends Model
      */
     protected $hidden = [
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**

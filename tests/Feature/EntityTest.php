@@ -3,10 +3,10 @@
 namespace Feature;
 
 use Illuminate\Foundation\Application;
-use Illuminate\Support\ServiceProvider;
-use Orchestra\Testbench\TestCase;
-use KusikusiCMS\Models\Entity;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\ServiceProvider;
+use KusikusiCMS\Models\Entity;
+use Orchestra\Testbench\TestCase;
 
 final class EntityTest extends TestCase
 {
@@ -16,7 +16,6 @@ final class EntityTest extends TestCase
      * Get package providers.
      *
      * @param  Application  $app
-     *
      * @return array<int, class-string<ServiceProvider>>
      */
     protected function getPackageProviders($app): array
@@ -26,24 +25,26 @@ final class EntityTest extends TestCase
             'KusikusiCMS\Models\ModelsServiceProvider',
         ];
     }
+
     /**
      * An Entity can be saved.
      */
     public function testAnEntityCanBeSaved(): void
     {
-        $entity = new Entity();
+        $entity = new Entity;
         $entity->save();
         $this->assertInstanceOf(Entity::class, $entity);
         $this->assertDatabaseHas('entities', [
-            'id' => $entity->id
+            'id' => $entity->id,
         ]);
     }
+
     /**
      * An Entity is saved with default values.
      */
     public function testAnEntityIsSavedWithDefaultValues(): void
     {
-        $entity = new Entity();
+        $entity = new Entity;
         $entity->save();
         $this->assertNotNull($entity->id);
         $this->assertNotNull($entity->published_at);
@@ -51,6 +52,7 @@ final class EntityTest extends TestCase
         $this->assertEquals('entity', $entity->view);
         $this->assertEquals([], $entity->properties);
     }
+
     /**
      * A custom entity id can be set.
      */
@@ -58,15 +60,16 @@ final class EntityTest extends TestCase
     {
         $id = 'customId';
         $entity = new Entity([
-            'id' => $id
+            'id' => $id,
         ]);
         $this->assertEquals($entity->id, $id);
         $entity->save();
         $this->assertDatabaseHas('entities', [
-            'id' => $id
+            'id' => $id,
         ]);
         $this->assertModelExists($entity);
     }
+
     /**
      * A custom model id can be set.
      */
@@ -74,15 +77,16 @@ final class EntityTest extends TestCase
     {
         $model = 'CustomModel';
         $entity = new Entity([
-            'model' => $model
+            'model' => $model,
         ]);
         $this->assertEquals($model, $entity->model);
         $entity->save();
         $this->assertDatabaseHas('entities', [
-            'model' => $model
+            'model' => $model,
         ]);
         $this->assertModelExists($entity);
     }
+
     /**
      * Testing the scope ofModel.
      */
@@ -91,7 +95,7 @@ final class EntityTest extends TestCase
         $counts = [3, 5, 7];
         $total = 0;
         for ($m = 0; $m < count($counts); $m++) {
-            $modelName = 'model' . $m;
+            $modelName = 'model'.$m;
             Entity::factory($counts[$m])->create(['model' => $modelName]);
             $total = $total + $counts[$m];
             $scoped = Entity::query()

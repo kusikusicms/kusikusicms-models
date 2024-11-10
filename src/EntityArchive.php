@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class EntityArchive extends Model
 {
-
     /**
      * The table associated with the model.
      *
@@ -23,6 +22,6 @@ class EntityArchive extends Model
         'entity_id',
         'kind',
         'version',
-        'payload'
+        'payload',
     ];
 }

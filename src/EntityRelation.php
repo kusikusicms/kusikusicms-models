@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 class EntityRelation extends Pivot
 {
     const RELATION_ANCESTOR = 'ancestor';
+
     const RELATION_UNDEFINED = 'relation';
 
     /**
@@ -28,7 +29,7 @@ class EntityRelation extends Pivot
             'kind',
             'position',
             'depth',
-            'tags'
+            'tags',
         ];
 
     /**
@@ -41,7 +42,7 @@ class EntityRelation extends Pivot
             'created_at',
             'updated_at',
             'caller_entity_id',
-            'called_entity_id'
+            'called_entity_id',
         ];
 
     /**
@@ -51,7 +52,7 @@ class EntityRelation extends Pivot
      */
     protected $casts
         = [
-            'tags' => 'array'
+            'tags' => 'array',
         ];
 
     protected $guarded = ['relation_id'];

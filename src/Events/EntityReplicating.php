@@ -14,7 +14,5 @@ class EntityReplicating
     /**
      * Create a new event instance.
      */
-    public function __construct(public Entity $entity)
-    {
-    }
+    public function __construct(public Entity $entity) {}
 }

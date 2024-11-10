@@ -2,8 +2,8 @@
 
 namespace KusikusiCMS\Models;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\Console\AboutCommand;
+use Illuminate\Support\ServiceProvider;
 use KusikusiCMS\Models\Listeners\EntityEventSubscriber;
 
 class ModelsServiceProvider extends ServiceProvider
@@ -16,6 +16,7 @@ class ModelsServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/kusikusicms-models.php', 'kusikusicms-models');
         $this->app->register(EntityEventsServiceProvider::class);
     }
+
     /**
      * Bootstrap package services.
      */
@@ -25,6 +26,7 @@ class ModelsServiceProvider extends ServiceProvider
         $this->publishes([__DIR__.'/../config/kusikusicms-models.php' => config_path('kusikusicms-models.php')]);
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
     }
+
     /**
      * The subscriber classes to register.
      *

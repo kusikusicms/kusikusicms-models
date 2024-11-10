@@ -2,8 +2,8 @@
 
 namespace Unit;
 
-use PHPUnit\Framework\TestCase;
 use KusikusiCMS\Models\Entity;
+use PHPUnit\Framework\TestCase;
 
 final class EntityTest extends TestCase
 {
@@ -12,7 +12,7 @@ final class EntityTest extends TestCase
      */
     public function testAnEntityCanBeConstructed(): void
     {
-        $entity = new Entity();
+        $entity = new Entity;
         $this->assertInstanceOf(Entity::class, $entity);
     }
 }

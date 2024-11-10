@@ -3,34 +3,31 @@
 namespace KusikusiCMS\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use KusikusiCMS\Models\Traits\UsesShortId;
-use Illuminate\Database\Eloquent\Factories\Factory;
+use KusikusiCMS\Models\Events\EntityCreated;
+use KusikusiCMS\Models\Events\EntityCreating;
+use KusikusiCMS\Models\Events\EntityDeleted;
+use KusikusiCMS\Models\Events\EntityDeleting;
+use KusikusiCMS\Models\Events\EntityForceDeleted;
+use KusikusiCMS\Models\Events\EntityForceDeleting;
+use KusikusiCMS\Models\Events\EntityReplicating;
+use KusikusiCMS\Models\Events\EntityRestored;
+use KusikusiCMS\Models\Events\EntityRestoring;
+use KusikusiCMS\Models\Events\EntityRetrieved;
+use KusikusiCMS\Models\Events\EntitySaved;
+use KusikusiCMS\Models\Events\EntitySaving;
+use KusikusiCMS\Models\Events\EntityTrashed;
+use KusikusiCMS\Models\Events\EntityUpdated;
+use KusikusiCMS\Models\Events\EntityUpdating;
 use KusikusiCMS\Models\Factories\EntityFactory;
-use KusikusiCMS\Models\Events\{
-    EntityCreating,
-    EntityCreated,
-    EntityRetrieved,
-    EntityUpdating,
-    EntityUpdated,
-    EntitySaving,
-    EntitySaved,
-    EntityDeleting,
-    EntityDeleted,
-    EntityTrashed,
-    EntityForceDeleting,
-    EntityForceDeleted,
-    EntityRestoring,
-    EntityRestored,
-    EntityReplicating
-};
-
+use KusikusiCMS\Models\Traits\UsesShortId;
 
 class Entity extends Model
 {
-    use UsesShortId, SoftDeletes, HasFactory;
+    use HasFactory, SoftDeletes, UsesShortId;
 
     /**
      * The table associated with the model.
@@ -63,7 +60,7 @@ class Entity extends Model
             'parent_entity_id',
             'created_at',
             'published_at',
-            'unpublished_at'
+            'unpublished_at',
         ];
 
     /**
@@ -76,7 +73,7 @@ class Entity extends Model
             'properties' => 'array',
             'published_at' => 'datetime',
             'unpublished_at' => 'datetime',
-            'langs' => 'array'
+            'langs' => 'array',
         ];
 
     /**
@@ -131,16 +128,16 @@ class Entity extends Model
         $currentDepth = 1;
         while ($currentAncestor) {
             EntityRelation::create([
-                "caller_entity_id" => $entity->id,
-                "called_entity_id" => $currentAncestor->id,
-                "kind" => EntityRelation::RELATION_ANCESTOR,
-                "depth" => $currentDepth
+                'caller_entity_id' => $entity->id,
+                'called_entity_id' => $currentAncestor->id,
+                'kind' => EntityRelation::RELATION_ANCESTOR,
+                'depth' => $currentDepth,
             ]);
             $currentAncestor = Entity::find($currentAncestor->parent_entity_id);
             $currentDepth++;
         }
         // Descendants should be updated as well
-        $children = Entity::where("parent_entity_id", $entity->id)->get();
+        $children = Entity::where('parent_entity_id', $entity->id)->get();
         foreach ($children as $child) {
             self::refreshAncestorsRelationsOfEntity($child);
         }
@@ -153,7 +150,6 @@ class Entity extends Model
         self::refreshAncestorsRelationsOfEntity($this);
     }
 
-
     /**********
      * SCOPES *
      **********/
@@ -161,8 +157,6 @@ class Entity extends Model
     /**
      * Scope a query to only include entities of a given modelId.
      *
-     * @param  Builder $query
-     * @param  string $model
      * @return Builder
      */
     public function scopeOfModel(Builder $query, string $model)
@@ -174,17 +168,15 @@ class Entity extends Model
     /**
      * Scope a query to only include children of a given parent id.
      *
-     * @param  Builder  $query
      * @param  string  $entity_id  The id of the parent entity
      * @param  string|null  $tag  Filter by one tag
      *
-     * @return Builder
      * @throws Exception
      */
     public function scopeChildrenOf(
         Builder $query,
         string $entity_id,
-        string|null $tag = null
+        ?string $tag = null
     ): Builder {
         return $query->join('entities_relations as child',
             function ($join) use ($entity_id, $tag) {
@@ -195,7 +187,7 @@ class Entity extends Model
                         EntityRelation::RELATION_ANCESTOR)
                     ->when($tag, function ($q) use ($tag) {
                         return $q->whereJsonContains('child.tags', $tag);
-                    });;
+                    });
             })
             ->addSelect('id')
             ->addSelect('child.position as child.position')

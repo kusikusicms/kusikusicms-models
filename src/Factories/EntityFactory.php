@@ -1,4 +1,5 @@
 <?php
+
 namespace KusikusiCMS\Models\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -7,7 +8,6 @@ use KusikusiCMS\Models\Entity;
 
 class EntityFactory extends Factory
 {
-
     /**
      * The name of the factory's corresponding model.
      *
@@ -24,7 +24,7 @@ class EntityFactory extends Factory
     {
         return [
             'model' => 'Entity',
-            'view' => 'entity'
+            'view' => 'entity',
         ];
     }
 }

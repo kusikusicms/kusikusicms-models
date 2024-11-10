@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class CreateEntitiesContentsTable extends Migration
 {
@@ -28,7 +28,7 @@ class CreateEntitiesContentsTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
         });
-        switch(env('DB_CONNECTION')) {
+        switch (env('DB_CONNECTION')) {
             case 'mysql':
                 DB::statement('CREATE FULLTEXT INDEX entities_contents_value_fulltext ON entities_contents(text);');
                 break;

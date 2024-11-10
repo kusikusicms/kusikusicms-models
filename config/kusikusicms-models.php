@@ -2,5 +2,5 @@
 
 return [
     'short_id_length' => 10, // Max. 26 characters
-    'versioning' => false
+    'versioning' => false, // Store entities versions in the archives table
 ];

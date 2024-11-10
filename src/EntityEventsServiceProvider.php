@@ -2,8 +2,8 @@
 
 namespace KusikusiCMS\Models;
 
-use KusikusiCMS\Models\Listeners\EntityEventSubscriber;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider;
+use KusikusiCMS\Models\Listeners\EntityEventSubscriber;
 
 class EntityEventsServiceProvider extends EventServiceProvider
 {

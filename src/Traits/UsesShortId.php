@@ -16,11 +16,11 @@ trait UsesShortId
     {
         parent::boot();
         self::creating(function ($model) {
-            if (!isset($model[$model->getKeyName()])) {
+            if (! isset($model[$model->getKeyName()])) {
                 do {
                     $id = Shortid::generate(Config::get('kusikusi_models.short_id_length', 10));
                     $found_duplicate = self::where($model->getKeyName(), $id)->first();
-                } while (!!$found_duplicate);
+                } while ((bool) $found_duplicate);
                 $model->setAttribute($model->getKeyName(), $id);
             } else {
                 $model->setAttribute($model->getKeyName(), substr($model[$model->getKeyName()], 0, 16));
