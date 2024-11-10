@@ -163,7 +163,7 @@ final class EntityTest extends TestCase
         $parentId = 'parentId';
         $childId = 'childId';
         Entity::factory()->create(['id' => $parentId]);
-        Entity::factory(5)->create();
+        Entity::factory(5)->create(); // Create random entities to be sure they are not included
         Entity::factory()->create([
             'id' => $childId,
             'parent_entity_id' => $parentId,
@@ -173,5 +173,27 @@ final class EntityTest extends TestCase
             ->parentOf($childId);
         $this->assertEquals(1, $scoped->get()->count());
         $this->assertEquals($parentId, $scoped->first()->id);
+    }
+
+    /**
+     * Testing scope ParentOf
+     */
+    public function testAncestorsOf(): void
+    {
+        $levels = 5;
+        $parentId = null;
+        Entity::factory(5)->create(); // Create random entities to be sure they are not included
+        for ($l = 0; $l < $levels; $l++) {
+            $entityId = 'entity'.$l;
+            Entity::factory()->create([
+                'id' => $entityId,
+                'parent_entity_id' => $parentId,
+            ]);
+            $parentId = $entityId;
+            $scoped = Entity::query()
+                ->ancestorsOf($entityId)
+                ->get();
+            $this->assertEquals($l, $scoped->count());
+        }
     }
 }

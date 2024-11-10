@@ -170,7 +170,6 @@ class Entity extends Model
      *
      * @param  string  $entity_id  The id of the parent entity
      * @param  string|null  $tag  Filter by one tag
-     *
      */
     public function scopeChildrenOf(Builder $query, string $entity_id, ?string $tag = null): Builder
     {
@@ -193,10 +192,9 @@ class Entity extends Model
     /**
      * Scope a query to only include the parent of the given id.
      *
-     * @param  number  $entity_id  The id of the parent entity
-     *
+     * @param  string  $entity_id  The id of the parent entity
      */
-    public function scopeParentOf(Builder $query, $entity_id): Builder
+    public function scopeParentOf(Builder $query, string $entity_id): Builder
     {
         return $query->join('entities_relations as parent', function ($join) use ($entity_id) {
             $join->on('parent.called_entity_id', '=', 'entities.id')
@@ -209,5 +207,28 @@ class Entity extends Model
             ->addSelect('parent.position as parent.position')
             ->addSelect('parent.depth as parent.depth')
             ->addSelect('parent.tags as parent.tags');
+    }
+
+    /**
+     * Scope a query to only include the ancestors of a given entity.
+     * Returns the anscestors in order
+     *
+     * @param  number  $entity_id  The id of the entity
+     * @return Builder
+     *
+     * @throws \Exception
+     */
+    public function scopeAncestorsOf(Builder $query, $entity_id)
+    {
+        return $query->join('entities_relations as ancestor', function ($join) use ($entity_id) {
+            $join->on('ancestor.called_entity_id', '=', 'entities.id')
+                ->where('ancestor.caller_entity_id', '=', $entity_id)
+                ->where('ancestor.kind', '=', EntityRelation::RELATION_ANCESTOR);
+        })
+            ->addSelect('id')
+            ->addSelect('ancestor.relation_id as ancestor.relation_id')
+            ->addSelect('ancestor.position as ancestor.position')
+            ->addSelect('ancestor.depth as ancestor.depth')
+            ->addSelect('ancestor.tags as ancestor.tags');
     }
 }
