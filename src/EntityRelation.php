@@ -2,6 +2,7 @@
 
 namespace KusikusiCMS\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class EntityRelation extends Pivot
@@ -83,5 +84,38 @@ class EntityRelation extends Pivot
     {
         return $this->belongsTo('KusikusiCMS\Models\Entity', 'called_entity_id',
             'relation_id');
+    }
+
+    /***
+     * SCOPES
+     */
+
+    /**
+     * Filter scope. Get the relations that match the filter criteria
+     *
+     * @param  array  $filter  An array with optional caller_entity_id, called_entity_id, kind, position, depth, tag
+     */
+    public function scopeFilter(Builder $query, array $filter): Builder
+    {
+        if (isset($filter['caller_entity_id'])) {
+            $query->where('caller_entity_id', $filter['caller_entity_id']);
+        }
+        if (isset($filter['called_entity_id'])) {
+            $query->where('called_entity_id', $filter['called_entity_id']);
+        }
+        if (isset($filter['kind'])) {
+            $query->where('kind', $filter['kind']);
+        }
+        if (isset($filter['position'])) {
+            $query->where('position', $filter['position']);
+        }
+        if (isset($filter['depth'])) {
+            $query->where('depth', $filter['depth']);
+        }
+        if (isset($filter['tag'])) {
+            $query->whereJsonContains('tags', $filter['tag']);
+        }
+
+        return $query;
     }
 }
