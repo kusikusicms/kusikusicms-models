@@ -47,7 +47,7 @@ final class EntityCoreTest extends TestCase
         $entity = new Entity;
         $entity->save();
         $this->assertNotNull($entity->id);
-        $this->assertNotNull($entity->published_at);
+        $this->assertNotNull($entity->publish_at);
         $this->assertEquals('Entity', $entity->model);
         $this->assertEquals('entity', $entity->view);
         $this->assertEquals([], $entity->properties);

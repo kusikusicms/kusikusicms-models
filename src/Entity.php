@@ -60,8 +60,8 @@ class Entity extends Model
             'status',
             'parent_entity_id',
             'created_at',
-            'published_at',
-            'unpublished_at',
+            'publish_at',
+            'unpublish_at',
         ];
 
     /**
@@ -72,8 +72,8 @@ class Entity extends Model
     protected $casts
         = [
             'properties' => 'array',
-            'published_at' => 'datetime',
-            'unpublished_at' => 'datetime',
+            'publish_at' => 'datetime',
+            'unpublish_at' => 'datetime',
             'langs' => 'array',
         ];
 

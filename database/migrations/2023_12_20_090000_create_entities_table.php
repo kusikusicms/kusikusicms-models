@@ -23,8 +23,8 @@ class CreateEntitiesTable extends Migration
             $table->string('status')->nullable()->index();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
-            $table->timestamp('published_at');
-            $table->timestamp('unpublished_at')->nullable();
+            $table->timestamp('publish_at');
+            $table->timestamp('unpublish_at')->nullable();
             $table->integer('version')->unsigned()->default(1);
             $table->integer('version_tree')->unsigned()->default(1);
             $table->integer('version_relations')->unsigned()->default(1);
