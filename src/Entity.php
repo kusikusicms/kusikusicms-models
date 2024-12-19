@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Config;
 use KusikusiCMS\Models\Events\EntityCreated;
 use KusikusiCMS\Models\Events\EntityCreating;
 use KusikusiCMS\Models\Events\EntityDeleted;
@@ -233,16 +234,52 @@ class Entity extends Model
             ->addSelect('ancestor.tags as ancestor.tags');
     }
 
-    /***
-     * RELATIONS
-     */
+    /****************
+     * Relationships
+     ***************/
 
     /**
-     * Get the records in the entities_relations table this entity is using
+     * The generic relations relationship
      */
     public function relations(): HasMany
     {
         return $this
             ->hasMany(EntityRelation::class, 'caller_entity_id', 'id');
+    }
+
+    /**
+     * The contents relationship
+     */
+    public function contents(): HasMany
+    {
+        return $this
+            ->hasMany(EntityContent::class, 'entity_id', 'id');
+    }
+
+    /****************
+     * Methods
+     ***************/
+
+    /**
+     * Create contents for the current Entity.
+     *
+     * @param  array  $fieldsAndValues  An associative array of fields and their value
+     * @param  string|null  $language The id of the language of the contents
+     *
+     * @throws \Exception
+     */
+    public function createContent(array $fieldsAndValues, string $language = null): array
+    {
+        $affectedIds = [];
+        foreach ($fieldsAndValues as $field => $value) {
+            $content = $this->contents()->updateOrCreate([
+                "lang" => $language ?? Config::get('kusikusicms-models.default_language', 'en'),
+                "field" => $field
+            ],[
+                "text" => $value
+            ]);
+            $affectedIds[] = $content->content_id;
+        }
+        return $affectedIds;
     }
 }
