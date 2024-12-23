@@ -2,12 +2,14 @@
 
 namespace KusikusiCMS\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use KusikusiCMS\Models\Events\EntityCreated;
@@ -60,7 +62,7 @@ class Entity extends Model
             'view',
             'langs',
             'properties',
-            'status',
+            'published',
             'parent_entity_id',
             'created_at',
             'publish_at',
@@ -78,7 +80,37 @@ class Entity extends Model
             'publish_at' => 'datetime',
             'unpublish_at' => 'datetime',
             'langs' => 'array',
+            'published' => 'boolean',
         ];
+
+    /**
+     * isPublished attribute
+     * @return Attribute
+     */
+    protected function status(): Attribute
+    {
+        return new Attribute(
+            get: function (mixed $value, array $attributes) {
+                    $now = Carbon::now();
+                    if (!$attributes['published']) {
+                        return 'draft';
+                    } else if (!$attributes['publish_at'] || $attributes['publish_at'] > $now) {
+                        return 'scheduled';
+                    } else if (isset($attributes['unpublish_at']) && $attributes['unpublish_at'] < $now) {
+                        return 'outdated';
+                    } else {
+                        return 'published';
+                    }
+                },
+        );
+    }
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['status'];
+
 
     /**
      * The event map for the model. Some events are not used here, but they are defined so other packages can use them

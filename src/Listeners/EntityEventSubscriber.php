@@ -20,7 +20,7 @@ class EntityEventSubscriber
         if (Entity::find($event->entity[$event->entity->getKeyName()])) {
             abort(403, 'Duplicated Entity ID "'.$event->entity[$event->entity->getKeyName()]).'"';
         }
-        // Setting default values
+        // Setting default values, some of them can not be set as default attributes.
         if (! isset($event->entity->model)) {
             $event->entity->model = 'Entity';
         }
@@ -32,6 +32,9 @@ class EntityEventSubscriber
         }
         if (! isset($event->entity->properties)) {
             $event->entity->properties = new \ArrayObject;
+        }
+        if (! isset($event->entity->published)) {
+            $event->entity->published = true;
         }
     }
 

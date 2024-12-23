@@ -38,9 +38,11 @@ final class EntityCollectionTest extends TestCase
      */
     public function testACollectionIsRetrieved(): void
     {
-        $entity1 = Entity::query()->create();
-        $entity2 = Entity::query()->create();
+        Entity::query()->create();
+        Entity::query()->create();
+        Entity::query()->create();
         $entities = Entity::all();
         $this->assertInstanceOf(EntityCollection::class, $entities);
+        $this->assertCount(3, $entities);
     }
 }
