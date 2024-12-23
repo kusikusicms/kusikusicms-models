@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use KusikusiCMS\Models\Events\EntityCreated;
 use KusikusiCMS\Models\Events\EntityCreating;
@@ -268,18 +269,15 @@ class Entity extends Model
      *
      * @throws \Exception
      */
-    public function createContent(array $fieldsAndValues, string $language = null): array
+    public function createContent(array $fieldsAndValues, string $language = null): int
     {
-        $affectedIds = [];
-        foreach ($fieldsAndValues as $field => $value) {
-            $content = $this->contents()->updateOrCreate([
-                "lang" => $language ?? Config::get('kusikusicms-models.default_language', 'en'),
-                "field" => $field
-            ],[
-                "text" => $value
-            ]);
-            $affectedIds[] = $content->content_id;
-        }
-        return $affectedIds;
+        return EntityContent::upsert(Arr::map($fieldsAndValues, function (string $value, string $key) use ($language) {
+            return [
+                'entity_id' => $this->id,
+                'field' => $key,
+                'text' => $value,
+                'lang' => $language ?? Config::get('kusikusicms-models.default_language', 'en')
+            ];
+        }), uniqueBy: ['entity_id', 'field', 'lang'], update: ['text']);
     }
 }

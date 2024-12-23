@@ -2,8 +2,10 @@
 
 namespace Feature;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use KusikusiCMS\Models\Entity;
 use KusikusiCMS\Models\EntityContent;
@@ -28,6 +30,16 @@ final class EntityContentTest extends TestCase
             'KusikusiCMS\Models\EntityEventsServiceProvider',
             'KusikusiCMS\Models\ModelsServiceProvider',
         ];
+    }
+
+    /**
+     * Filter function
+     */
+    private function oneContentExists (Collection $contents, string $field, string $text, string $lang = null): bool {
+        $lang = $lang ?? (Config::get('kusikusicms-models.default_language', 'en'));
+        return $contents->filter(function (EntityContent $item) use ($field, $text, $lang) {
+            return $item->field === $field && $item->text === $text && $item->lang === $lang;
+        })->count() === 1;
     }
 
     /**
@@ -71,14 +83,15 @@ final class EntityContentTest extends TestCase
         ]);
         $entity->refresh();
         $this->assertCount(2, $entity->contents);
-        $this->assertTrue($entity->contents->contains("text", "The title"));
+        $this->assertTrue($this->oneContentExists($entity->contents, "title", "The title"));
+        $this->assertTrue($this->oneContentExists($entity->contents, "body", "The body"));
 
         $entity->createContent([
             "summary" => "The summary"
         ]);
         $entity->refresh();
         $this->assertCount(3, $entity->contents);
-        $this->assertTrue($entity->contents->contains("text", "The body"));
+        $this->assertTrue($this->oneContentExists($entity->contents, "summary", "The summary"));
 
         $entity->createContent([
             "title" => "The title 2",
@@ -86,12 +99,15 @@ final class EntityContentTest extends TestCase
         ]);
         $entity->refresh();
         $this->assertCount(3, $entity->contents);
+        $this->assertTrue($this->oneContentExists($entity->contents, "title", "The title 2"));
+        $this->assertTrue($this->oneContentExists($entity->contents, "body", "The body 2"));
 
         $entity->createContent([
             "title" => "El título"
         ], 'es');
         $entity->refresh();
         $this->assertCount(4, $entity->contents);
-        $this->assertTrue($entity->contents->contains("text", "El título"));
+        $this->assertTrue($this->oneContentExists($entity->contents, "title", "The title 2"));
+        $this->assertTrue($this->oneContentExists($entity->contents, "title", "El título", "es"));
     }
 }
