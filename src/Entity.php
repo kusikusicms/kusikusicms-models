@@ -26,6 +26,7 @@ use KusikusiCMS\Models\Events\EntityTrashed;
 use KusikusiCMS\Models\Events\EntityUpdated;
 use KusikusiCMS\Models\Events\EntityUpdating;
 use KusikusiCMS\Models\Factories\EntityFactory;
+use KusikusiCMS\Models\Support\EntityCollection;
 use KusikusiCMS\Models\Traits\UsesShortId;
 
 class Entity extends Model
@@ -102,6 +103,18 @@ class Entity extends Model
             'restored' => EntityRestored::class,
             'replicating' => EntityReplicating::class,
         ];
+
+    /**
+     * Create a new Eloquent Collection instance.
+     *
+     * @param  array<int, Entity>  $models
+     *
+     * @return EntityCollection<int, Entity>
+     */
+    public function newCollection(array $models = []): EntityCollection
+    {
+        return new EntityCollection($models);
+    }
 
     /**
      * Static function to refresh the relations of ANCESTOR kind for the given Entity ID.
