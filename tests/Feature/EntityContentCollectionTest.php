@@ -97,4 +97,28 @@ final class EntityContentCollectionTest extends TestCase
         $this->assertEquals('Título 2', $entity->contents['title']);
         $this->assertEquals('Cuerpo 2', $entity->contents['body']);
     }
+
+    public function testGroupContentsByFieldMethod(): void
+    {
+        $this->createSampleEntities();
+
+        $entity = Entity::query()->withContents()->find('e2');;
+        $entity->groupContentsByField();;
+        $this->assertEquals('Title 2', $entity->contents['title']['en']);
+        $this->assertEquals('Título 2', $entity->contents['title']['es']);
+        $this->assertEquals('Body 2', $entity->contents['body']['en']);
+        $this->assertEquals('Cuerpo 2', $entity->contents['body']['es']);
+    }
+
+    public function testGroupContentsByLangMethod(): void
+    {
+        $this->createSampleEntities();
+
+        $entity = Entity::query()->withContents()->find('e3');;
+        $entity->groupContentsByLang();;
+        $this->assertEquals('Title 3', $entity->contents['en']['title']);
+        $this->assertEquals('Título 3', $entity->contents['es']['title']);
+        $this->assertEquals('Body 3', $entity->contents['en']['body']);
+        $this->assertEquals('Cuerpo 3', $entity->contents['es']['body']);
+    }
 }
