@@ -3,6 +3,7 @@
 namespace KusikusiCMS\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use KusikusiCMS\Models\Support\EntityContentCollection;
 
 class EntityContent extends Model
 {
@@ -43,5 +44,16 @@ class EntityContent extends Model
     public function getKeyName()
     {
         return 'content_id';
+    }
+
+    /**
+     * Create a new Eloquent Collection instance.
+     *
+     * @param  array<int, EntityContent>  $contents
+     * @return EntityContentCollection<int, Entity>
+     */
+    public function newCollection(array $contents = []): EntityContentCollection
+    {
+        return new EntityContentCollection($contents);
     }
 }

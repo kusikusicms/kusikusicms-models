@@ -347,4 +347,13 @@ class Entity extends Model
             ];
         }), uniqueBy: ['entity_id', 'field', 'lang'], update: ['text']);
     }
+
+    public function flattenContentsByField(): Entity
+    {
+        if (isset($this->contents) && $this->contents !== null) {
+            $this->contents = $this->contents->flattenByField();
+            $this->setRelation('contents', $this->contents);
+        }
+        return $this;
+    }
 }
