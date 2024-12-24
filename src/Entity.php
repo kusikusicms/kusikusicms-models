@@ -280,6 +280,28 @@ class Entity extends Model
             ->addSelect('ancestor.tags as ancestor.tags');
     }
 
+    /**
+     * Scope to include contents relation, filtered by lang and fields.
+     *
+     * @param  Builder  $query
+     * @param  string|null  $lang
+     * @param  array|null  $fields
+     *
+     * @return Builder
+     */
+    public function scopeWithContents($query, string $lang = null, array $fields = null, ): Builder
+    {
+        return $query->with(['contents' => function($q) use ($lang, $fields) {
+            $q->when($lang !== null, function ($q) use ($lang, $fields) {
+                return $q->where('lang', $lang);
+            });
+            $q->when($fields !== null, function ($q) use ($fields) {
+                if (is_array($fields)) return $q->whereIn('field', $fields);
+                if (is_string($fields)) return $q->where('field', $fields);
+            });
+        }]);
+    }
+
     /****************
      * Relationships
      ***************/
