@@ -93,7 +93,9 @@ class Entity extends Model
         return new Attribute(
             get: function (mixed $value, array $attributes) {
                     $now = Carbon::now();
-                    if (!$attributes['published']) {
+                    if (!isset($attributes['published'])) {
+                        return 'unknown';
+                    } else if (!$attributes['published']) {
                         return 'draft';
                     } else if (!$attributes['publish_at'] || $attributes['publish_at'] > $now) {
                         return 'scheduled';
@@ -105,12 +107,6 @@ class Entity extends Model
                 },
         );
     }
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
-    protected $appends = ['status'];
 
 
     /**
@@ -301,6 +297,31 @@ class Entity extends Model
                 if (is_string($fields)) return $q->where('field', $fields);
             });
         }]);
+    }
+
+    /**
+     * Scope to order the result by a content field.
+     *
+     * @param  Builder  $query
+     * @param  string  $field
+     * @param  string  $order
+     * @param  string|null  $lang
+     *
+     * @return Builder
+     */
+    public function scopeOrderByContent($query, string $field, string $order = 'asc', string $lang = null)
+    {
+        if (!$lang) {
+            $lang = Config::get('kusikusicms-models.default_language', 'en');
+        }
+        return $query->leftJoin("entities_contents as content_{$field}", function ($join) use ($field, $lang, $order) {
+            $join->on("content_{$field}.entity_id", "entities.id")
+                ->where("content_{$field}.field", $field)
+                ->where("content_{$field}.lang", $lang)
+            ;
+        })
+            ->addSelect("content_{$field}.text as content_{$field}")
+            ->orderBy("content_{$field}.text", $order);
     }
 
     /****************

@@ -128,4 +128,35 @@ final class EntityContentTest extends TestCase
         $this->assertCount(1, $entity->contents);
         $this->assertTrue($this->oneContentExists($entity->contents, "body", "The body 2", "en"));
     }
+
+    public function testOrderByContentScope(): void
+    {
+        $e1 = Entity::query()->create(["id" => "e1"]);
+        $e1->createContent(["title" => "Gamma title 1",  "body" => "Delta body 1"], "en");
+        $e1->createContent(["title" => "Gamma título 1", "body" => "Gamma cuerpo 1"], "es");
+
+        $e2 = Entity::query()->create(["id" => "e2"]);
+        $e2->createContent(["title" => "Beta title 2",  "body" => "Beta body 2"], "en");
+        $e2->createContent(["title" => "Beta título 2", "body" => "Delta cuerpo 2"], "es");
+
+        $e3 = Entity::query()->create(["id" => "e3"]);
+        $e3->createContent(["title" => "Alpha title 3",  "body" => "Gamma body 3"], "en");
+        $e3->createContent(["title" => "Delta título 3", "body" => "Beta cuerpo 3"], "es");
+
+        $e4 = Entity::query()->create(["id" => "e4"]);
+        $e4->createContent(["title" => "Delta title 4",  "body" => "Alpha body 4"], "en");
+        $e4->createContent(["title" => "Alpha título 4", "body" => "Alpha cuerpo 4"], "es");
+
+        $entities = Entity::query()->select('id')->orderByContent('title')->get();
+        $this->assertEquals(["e3", "e2", "e4", "e1"], $entities->pluck('id')->all());
+
+        $entities = Entity::query()->select('id')->orderByContent('title', 'desc')->get();
+        $this->assertEquals(["e1", "e4", "e2", "e3"], $entities->pluck('id')->all());
+
+        $entities = Entity::query()->select('id')->orderByContent('title', 'asc', 'en')->get();
+        $this->assertEquals(["e3", "e2", "e4", "e1"], $entities->pluck('id')->all());
+
+        $entities = Entity::query()->select('id')->orderByContent('body', 'desc', 'es')->get();
+        $this->assertEquals(["e1", "e2", "e3", "e4"], $entities->pluck('id')->all());
+    }
 }
