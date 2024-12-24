@@ -110,4 +110,22 @@ final class EntityContentTest extends TestCase
         $this->assertTrue($this->oneContentExists($entity->contents, "title", "The title 2"));
         $this->assertTrue($this->oneContentExists($entity->contents, "title", "El título", "es"));
     }
+
+    public function testWithContentsScope(): void
+    {
+        $e1 = Entity::query()->create(["id" => "e1"]);
+        $e1->createContent(["title" => "The title 1", "body" => "The body 1"], "en");
+        $e1->createContent(["title" => "El título 1", "body" => "El cuerpo 1"], "es");
+        $e2 = Entity::query()->create(["id" => "e2"]);
+        $e2->createContent(["title" => "The title 2", "body" => "The body 2"], "en");
+        $e2->createContent(["title" => "El título 2", "body" => "El cuerpo 2"], "es");
+
+        $entity = Entity::query()->withContents('es')->find("e1"); ;
+        $this->assertCount(2, $entity->contents);
+        $this->assertTrue($this->oneContentExists($entity->contents, "title", "El título 1", "es"));
+
+        $entity = Entity::query()->withContents('en', ["body"])->find("e2"); ;
+        $this->assertCount(1, $entity->contents);
+        $this->assertTrue($this->oneContentExists($entity->contents, "body", "The body 2", "en"));
+    }
 }
