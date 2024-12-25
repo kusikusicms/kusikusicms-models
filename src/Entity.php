@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Str;
 use KusikusiCMS\Models\Events\EntityCreated;
 use KusikusiCMS\Models\Events\EntityCreating;
 use KusikusiCMS\Models\Events\EntityDeleted;
@@ -314,14 +315,50 @@ class Entity extends Model
         if (!$lang) {
             $lang = Config::get('kusikusicms-models.default_language', 'en');
         }
-        return $query->leftJoin("entities_contents as content_{$field}", function ($join) use ($field, $lang, $order) {
-            $join->on("content_{$field}.entity_id", "entities.id")
-                ->where("content_{$field}.field", $field)
-                ->where("content_{$field}.lang", $lang)
+        return $query->leftJoin("entities_contents as content_order_{$lang}_{$field}", function ($join) use ($field, $lang, $order) {
+            $join->on("content_order_{$lang}_{$field}.entity_id", "entities.id")
+                ->where("content_order_{$lang}_{$field}.field", $field)
+                ->where("content_order_{$lang}_{$field}.lang", $lang)
             ;
         })
-            ->addSelect("content_{$field}.text as content_{$field}")
-            ->orderBy("content_{$field}.text", $order);
+            ->orderBy("content_order_{$lang}_{$field}.text", $order);
+    }
+
+    /**
+     * Scope to filter by a content field.
+     *
+     * @param  Builder  $query
+     * @param  string  $field
+     * @param  string  $param2
+     * @param  string|null  $param3
+     * @param  string|null  $param4
+     *
+     * @return Builder
+     */
+    public function scopeWhereContent(Builder $query, string $field, string $param2, string $param3 = null, string $param4 = null)
+    {
+        if (Str::contains($param2, ['=', 'like'])) {
+            $operator = $param2;
+            $value = $param3;
+            $lang = $param4;
+        } else {
+            $operator = '=';
+            $value = $param2;
+            $lang = $param3;
+        }
+        if (!$lang) {
+            $lang = '';
+        }
+        $value = $operator === 'like' ? "%$value%" : $value;
+        return $query->leftJoin("entities_contents as content_where_{$lang}_{$field}", function ($join) use ($field, $operator, $lang, $value) {
+            $join->on("content_where_{$lang}_{$field}.entity_id", "entities.id")
+                ->where("content_where_{$lang}_{$field}.field", $operator, $field)
+                ->when($lang !== '', function ($q) use ($lang, $field) {
+                    return $q->where("content_where_{$lang}_{$field}.lang", $lang);
+                })
+            ;
+        })
+            ->where("content_where_{$lang}_{$field}.text", $operator, $value);
     }
 
     /****************
