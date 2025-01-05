@@ -83,7 +83,7 @@ final class EntityContentCollectionTest extends TestCase
     }
 
     /**
-     * Testing an Entity Collection can transform the contents relation
+     * Testing an Entity can transform the contents relation
      */
     public function testContentsByFieldMethod(): void
     {
@@ -120,5 +120,33 @@ final class EntityContentCollectionTest extends TestCase
         $this->assertEquals('Título 3', $entity->contents['es']['title']);
         $this->assertEquals('Body 3', $entity->contents['en']['body']);
         $this->assertEquals('Cuerpo 3', $entity->contents['es']['body']);
+    }
+
+    /**
+     * Testing an Entity Collection can transform the contents relation of every Entity
+     */
+    public function testCollectionContentsByFieldMethod(): void
+    {
+        $this->createSampleEntities();
+
+        $collection = Entity::query()->withContents('en')->orderByContent('title')->get();
+        $collection->flattenContentsByField();
+        $this->assertEquals('Title 2', $collection->get(1)->contents['title']);
+    }
+    public function testCollectionGroupContentsByFieldMethod(): void
+    {
+        $this->createSampleEntities();
+
+        $collection = Entity::query()->withContents()->orderByContent('title')->get();
+        $collection->groupContentsByField();
+        $this->assertEquals('Title 2', $collection->get(1)->contents['title']['en']);
+    }
+    public function testCollectionGroupContentsByLangMethod(): void
+    {
+        $this->createSampleEntities();
+
+        $collection = Entity::query()->withContents()->orderByContent('title')->get();
+        $collection->groupContentsByLang();
+        $this->assertEquals('Title 2', $collection->get(1)->contents['en']['title']);
     }
 }
