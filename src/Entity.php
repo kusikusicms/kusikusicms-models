@@ -423,6 +423,7 @@ class Entity extends Model
         }
         return $this;
     }
+
     public function groupContentsByLang(): Entity
     {
         if (isset($this->contents) && $this->contents instanceof EntityContentsCollection) {
@@ -431,4 +432,34 @@ class Entity extends Model
         }
         return $this;
     }
+    /**
+     * Get a specific key of the entity props field, using dot notation
+     *
+     * @param  string  $key  The key of the prop
+     * @param  mixed  $default  The default value if the prop is not set
+     *
+     * @return mixed
+     */
+    public function getProp(string $key, mixed $default = null): mixed
+    {
+        $key = Str::replace('->', '.', $key);
+        return Arr::get($this->props, $key, $default);
+    }
+    /**
+     * Set a specific key of the entity props field, using dot notation
+     *
+     * @param  string  $key  The key of the prop
+     * @param  mixed  $value  The value of the prop
+     *
+     * @return Entity
+     */
+    public function setProp(string $key, mixed $value): Entity
+    {
+        $key = Str::replace('->', '.', $key);
+        $props = $this->props;
+        Arr::set($props, $key, $value);
+        $this->props = $props;
+        return $this;
+    }
+
 }

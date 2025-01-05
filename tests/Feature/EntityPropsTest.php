@@ -32,163 +32,104 @@ final class EntityPropsTest extends TestCase
         ];
     }
 
-    /**
-     * Filter function
-     */
-    private function oneContentExists (Collection $contents, string $field, string $text, string $lang = null): bool {
-        $lang = $lang ?? (Config::get('kusikusicms-models.default_language', 'en'));
-        return $contents->filter(function (EntityContent $item) use ($field, $text, $lang) {
-            return $item->field === $field && $item->text === $text && $item->lang === $lang;
-        })->count() === 1;
+    function someProps(): array
+    {
+        return [
+            "stringProp" => "value1",
+            "numberProp" => 2,
+            "booleanProp" => true,
+            "arrayProp" => ["value1", "value2"],
+            "objectProp" => ["key1" => "value1", "key2" => "value2"]
+        ];
+    }
+
+    function someEntitiesWithProps() {
+        Entity::query()->create(['id' => 'e1', 'props' => ['code' => 'Alpha', 'order' => 4]]);
+        Entity::query()->create(['id' => 'e2', 'props' => ['code' => 'Gamma', 'order' => 2]]);
+        Entity::query()->create(['id' => 'e3', 'props' => ['code' => 'Delta', 'order' => 1]]);
+        Entity::query()->create(['id' => 'e4', 'props' => ['code' => 'Beta', 'order' => 3]]);
     }
 
     /**
-     * Testing adding contents to an entity
+     * Testing create an entity with props
      */
-    public function testAddContents(): void
+    public function testCreateEntityWithProps(): void
     {
-        $entity1 = Entity::query()->create();
-        $entity2 = Entity::query()->create();
-        $entity1->contents()->create([
-            "lang" => "en-US",
-            "field" => "title",
-            "text" => "The Title"
-        ]);
-        $entity1->contents()->create([
-            "lang" => "en-US",
-            "field" => "body",
-            "text" => "The Body"
-        ]);
-        $entity2->contents()->create([
-            "lang" => "en-US",
-            "field" => "body",
-            "text" => "The Body 2"
-        ]);
-        $allContents = EntityContent::query()->get();
-        $this->assertCount(3, $allContents);
-        $entity1WithContents = Entity::query()
-            ->with("contents")
-            ->find($entity1->id);
-        $this->assertCount(2, $entity1WithContents->contents);
+        $props = $this->someProps();
+        $entity = Entity::query()->create(["props" => $props]);
+        $this->assertEquals($props['stringProp'], $entity->props['stringProp']);
+        $this->assertEquals($props['numberProp'], $entity->props['numberProp']);
+        $this->assertEquals($props['booleanProp'], $entity->props['booleanProp']);
+        $this->assertEquals($props['arrayProp'], $entity->props['arrayProp']);
+        $this->assertEquals($props['objectProp'], $entity->props['objectProp']);
     }
+
     /**
-     * Testing creating contents shorthand
+     * Testing adding props to an entity
      */
-    public function testCreateContents(): void
+    public function testAddPropsToAnEntity(): void
+    {
+        $props = $this->someProps();
+        $entity = Entity::query()->create();
+        $entity->props = $props;
+        $entity->save();
+        $this->assertEquals($props['stringProp'], $entity->props['stringProp']);
+        $this->assertEquals($props['numberProp'], $entity->props['numberProp']);
+        $this->assertEquals($props['booleanProp'], $entity->props['booleanProp']);
+        $this->assertEquals($props['arrayProp'], $entity->props['arrayProp']);
+        $this->assertEquals($props['objectProp'], $entity->props['objectProp']);
+    }
+
+    /**
+     * Testing setting individual props
+     */
+    public function testSetProp(): void
     {
         $entity = Entity::query()->create();
-        $entity->createContent([
-            "title" => "The title",
-            "body" => "The body"
-        ]);
-        $entity->refresh();
-        $this->assertCount(2, $entity->contents);
-        $this->assertTrue($this->oneContentExists($entity->contents, "title", "The title"));
-        $this->assertTrue($this->oneContentExists($entity->contents, "body", "The body"));
-
-        $entity->createContent([
-            "summary" => "The summary"
-        ]);
-        $entity->refresh();
-        $this->assertCount(3, $entity->contents);
-        $this->assertTrue($this->oneContentExists($entity->contents, "summary", "The summary"));
-
-        $entity->createContent([
-            "title" => "The title 2",
-            "body" => "The body 2"
-        ]);
-        $entity->refresh();
-        $this->assertCount(3, $entity->contents);
-        $this->assertTrue($this->oneContentExists($entity->contents, "title", "The title 2"));
-        $this->assertTrue($this->oneContentExists($entity->contents, "body", "The body 2"));
-
-        $entity->createContent([
-            "title" => "El título"
-        ], 'es');
-        $entity->refresh();
-        $this->assertCount(4, $entity->contents);
-        $this->assertTrue($this->oneContentExists($entity->contents, "title", "The title 2"));
-        $this->assertTrue($this->oneContentExists($entity->contents, "title", "El título", "es"));
+        $entity->setProp('alpha', 'beta'); $entity->save();
+        $this->assertEquals($entity->props['alpha'], 'beta');
+        $entity->setProp('one.two', 'gamma'); $entity->save();
+        $this->assertEquals($entity->props['one']['two'], 'gamma');
+        $entity->setProp('one->two', 'gamma2'); $entity->save();
+        $this->assertEquals($entity->props['one']['two'], 'gamma2');
+    }
+    /**
+     * Testing getting individual props
+     */
+    public function testGetProp(): void
+    {
+        $entity = Entity::query()->create();
+        $entity->setProp('alpha', 'beta'); $entity->save();
+        $this->assertEquals($entity->getProp('alpha'), 'beta');
+        $entity->setProp('one.two', 'gamma'); $entity->save();
+        $this->assertEquals($entity->getProp('one.two'), 'gamma');
+        $this->assertEquals($entity->getProp('one->two'), 'gamma');
     }
 
-    public function testWithContentsScope(): void
+    public function testOrderByProp(): void
     {
-        $e1 = Entity::query()->create(["id" => "e1"]);
-        $e1->createContent(["title" => "The title 1", "body" => "The body 1"], "en");
-        $e1->createContent(["title" => "El título 1", "body" => "El cuerpo 1"], "es");
-        $e2 = Entity::query()->create(["id" => "e2"]);
-        $e2->createContent(["title" => "The title 2", "body" => "The body 2"], "en");
-        $e2->createContent(["title" => "El título 2", "body" => "El cuerpo 2"], "es");
+        $this->someEntitiesWithProps();
+        $entities = Entity::query()->select('id')->orderBy('props->order', 'desc')->get();
+        $this->assertEquals($entities->get(0)->id, 'e1');
+        $this->assertEquals($entities->get(3)->id, 'e3');
 
-        $entity = Entity::query()->withContents('es')->find("e1"); ;
-        $this->assertCount(2, $entity->contents);
-        $this->assertTrue($this->oneContentExists($entity->contents, "title", "El título 1", "es"));
-
-        $entity = Entity::query()->withContents('en', ["body"])->find("e2"); ;
-        $this->assertCount(1, $entity->contents);
-        $this->assertTrue($this->oneContentExists($entity->contents, "body", "The body 2", "en"));
+        $entities = Entity::query()->select('id')->orderBy('props->code')->get();
+        $this->assertEquals($entities->get(0)->id, 'e1');
+        $this->assertEquals($entities->get(3)->id, 'e2');
     }
 
-    public function testOrderByContentScope(): void
+    public function testWhereProps(): void
     {
-        $e1 = Entity::query()->create(["id" => "e1"]);
-        $e1->createContent(["title" => "Gamma title 1",  "body" => "Delta body 1"], "en");
-        $e1->createContent(["title" => "Gamma título 1", "body" => "Gamma cuerpo 1"], "es");
+        $this->someEntitiesWithProps();
 
-        $e2 = Entity::query()->create(["id" => "e2"]);
-        $e2->createContent(["title" => "Beta title 2",  "body" => "Beta body 2"], "en");
-        $e2->createContent(["title" => "Beta título 2", "body" => "Delta cuerpo 2"], "es");
+        $entities = Entity::query()->select('id')->where('props->code', 'Beta')->get();
+        $this->assertCount(1, $entities);
+        $this->assertEquals($entities->get(0)->id, 'e4');
 
-        $e3 = Entity::query()->create(["id" => "e3"]);
-        $e3->createContent(["title" => "Alpha title 3",  "body" => "Gamma body 3"], "en");
-        $e3->createContent(["title" => "Delta título 3", "body" => "Beta cuerpo 3"], "es");
-
-        $e4 = Entity::query()->create(["id" => "e4"]);
-        $e4->createContent(["title" => "Delta title 4",  "body" => "Alpha body 4"], "en");
-        $e4->createContent(["title" => "Alpha título 4", "body" => "Alpha cuerpo 4"], "es");
-
-        $entities = Entity::query()->select('id')->orderByContent('title')->get();
-        $this->assertEquals(["e3", "e2", "e4", "e1"], $entities->pluck('id')->all());
-
-        $entities = Entity::query()->select('id')->orderByContent('title', 'desc')->get();
-        $this->assertEquals(["e1", "e4", "e2", "e3"], $entities->pluck('id')->all());
-
-        $entities = Entity::query()->select('id')->orderByContent('title', 'asc', 'en')->get();
-        $this->assertEquals(["e3", "e2", "e4", "e1"], $entities->pluck('id')->all());
-
-        $entities = Entity::query()->select('id')->orderByContent('body', 'desc', 'es')->get();
-        $this->assertEquals(["e1", "e2", "e3", "e4"], $entities->pluck('id')->all());
-    }
-
-    public function testWhereContentScope(): void
-    {
-        $e1 = Entity::query()->create(["id" => "e1"]);
-        $e1->createContent(["title" => "Gamma title 1",  "body" => "Delta body 1"], "en");
-        $e1->createContent(["title" => "Gamma título 1", "body" => "Gamma cuerpo 1"], "es");
-
-        $e2 = Entity::query()->create(["id" => "e2"]);
-        $e2->createContent(["title" => "Beta title 2",  "body" => "Beta body 2"], "en");
-        $e2->createContent(["title" => "Beta título 2", "body" => "Delta cuerpo 2"], "es");
-
-        $e3 = Entity::query()->create(["id" => "e3"]);
-        $e3->createContent(["title" => "Alpha title 3",  "body" => "Gamma body 3"], "en");
-        $e3->createContent(["title" => "Delta título 3", "body" => "Beta cuerpo 3"], "es");
-
-        $e4 = Entity::query()->create(["id" => "e4"]);
-        $e4->createContent(["title" => "Delta title 4",  "body" => "Alpha body 4"], "en");
-        $e4->createContent(["title" => "Alpha título 4", "body" => "Alpha cuerpo 4"], "es");
-
-        $entities = Entity::query()->select('id')->whereContent('body', 'Beta cuerpo 3')->get();
-        $this->assertEquals(["e3"], $entities->pluck('id')->all());
-
-        $entities = Entity::query()->select('id')->whereContent('body', '=', 'Alpha body 4')->get();
-        $this->assertEquals(["e4"], $entities->pluck('id')->all());
-
-        $entities = Entity::query()->select('id')->whereContent('body', 'like', 'Gamma')->get();
-        $this->assertEquals(["e1", "e3"], $entities->pluck('id')->all());
-
-        $entities = Entity::query()->select('id')->whereContent('body', 'like', 'Gamma', 'en')->get();
-        $this->assertEquals(["e3"], $entities->pluck('id')->all());
+        $entities = Entity::query()->select('id')->where('props->order', '<', 3)->orderBy('props->order')->get();
+        $this->assertCount(2, $entities);
+        $this->assertEquals($entities->get(0)->id, 'e3');
+        $this->assertEquals($entities->get(1)->id, 'e2');
 
     }
 }
