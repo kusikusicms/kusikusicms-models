@@ -63,7 +63,7 @@ class Entity extends Model
             'model',
             'view',
             'langs',
-            'properties',
+            'props',
             'published',
             'parent_entity_id',
             'created_at',
@@ -78,7 +78,7 @@ class Entity extends Model
      */
     protected $casts
         = [
-            'properties' => 'array',
+            'props' => 'array',
             'publish_at' => 'datetime',
             'unpublish_at' => 'datetime',
             'langs' => 'array',

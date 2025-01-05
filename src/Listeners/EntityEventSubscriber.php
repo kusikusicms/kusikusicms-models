@@ -30,8 +30,8 @@ class EntityEventSubscriber
         if (! isset($event->entity->view)) {
             $event->entity->view = Str::snake($event->entity['model']);
         }
-        if (! isset($event->entity->properties)) {
-            $event->entity->properties = new \ArrayObject;
+        if (! isset($event->entity->props)) {
+            $event->entity->props = new \ArrayObject;
         }
         if (! isset($event->entity->published)) {
             $event->entity->published = true;
