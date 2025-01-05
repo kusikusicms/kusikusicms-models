@@ -14,7 +14,7 @@ use KusikusiCMS\Models\Support\EntityCollection;
 use Orchestra\Testbench\TestCase;
 use function PHPUnit\Framework\assertCount;
 
-final class EntityContentCollectionTest extends TestCase
+final class EntityContentsCollectionTest extends TestCase
 {
     use RefreshDatabase;
 

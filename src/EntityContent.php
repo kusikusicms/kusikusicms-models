@@ -3,7 +3,7 @@
 namespace KusikusiCMS\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use KusikusiCMS\Models\Support\EntityContentCollection;
+use KusikusiCMS\Models\Support\EntityContentsCollection;
 
 class EntityContent extends Model
 {
@@ -50,10 +50,10 @@ class EntityContent extends Model
      * Create a new Eloquent Collection instance.
      *
      * @param  array<int, EntityContent>  $contents
-     * @return EntityContentCollection<int, Entity>
+     * @return EntityContentsCollection<int, Entity>
      */
-    public function newCollection(array $contents = []): EntityContentCollection
+    public function newCollection(array $contents = []): EntityContentsCollection
     {
-        return new EntityContentCollection($contents);
+        return new EntityContentsCollection($contents);
     }
 }

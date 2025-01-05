@@ -5,7 +5,7 @@ namespace KusikusiCMS\Models\Support;
 use Illuminate\Database\Eloquent\Collection;
 use KusikusiCMS\Models\EntityContent;
 
-class EntityContentCollection extends Collection
+class EntityContentsCollection extends Collection
 {
     /**
      * Methods

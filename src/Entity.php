@@ -30,7 +30,7 @@ use KusikusiCMS\Models\Events\EntityUpdated;
 use KusikusiCMS\Models\Events\EntityUpdating;
 use KusikusiCMS\Models\Factories\EntityFactory;
 use KusikusiCMS\Models\Support\EntityCollection;
-use KusikusiCMS\Models\Support\EntityContentCollection;
+use KusikusiCMS\Models\Support\EntityContentsCollection;
 use KusikusiCMS\Models\Traits\UsesShortId;
 
 class Entity extends Model
@@ -409,7 +409,7 @@ class Entity extends Model
 
     public function flattenContentsByField(): Entity
     {
-        if (isset($this->contents) && $this->contents instanceof EntityContentCollection) {
+        if (isset($this->contents) && $this->contents instanceof EntityContentsCollection) {
             $this->contents = $this->contents->flattenByField();
             $this->setRelation('contents', $this->contents);
         }
@@ -417,7 +417,7 @@ class Entity extends Model
     }
     public function groupContentsByField(): Entity
     {
-        if (isset($this->contents) && $this->contents instanceof EntityContentCollection) {
+        if (isset($this->contents) && $this->contents instanceof EntityContentsCollection) {
             $this->contents = $this->contents->groupByField();
             $this->setRelation('contents', $this->contents);
         }
@@ -425,7 +425,7 @@ class Entity extends Model
     }
     public function groupContentsByLang(): Entity
     {
-        if (isset($this->contents) && $this->contents instanceof EntityContentCollection) {
+        if (isset($this->contents) && $this->contents instanceof EntityContentsCollection) {
             $this->contents = $this->contents->groupByLang();
             $this->setRelation('contents', $this->contents);
         }
